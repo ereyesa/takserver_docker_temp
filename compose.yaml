@@ -1,13 +1,15 @@
 services:
   freetakserver:
+    platform: linux/amd64
     image: freetakserver:latest
-    pull_policy: build
+    pull_policy: if_not_present # se reemplazo "build" 
     restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - free-tak-core-db:/opt/fts/
+      - ./FreeTAKServer:/home/freetak/FreeTAKServer
+      - fts-internal:/opt/fts/
     ports:
       # DataPackagePort
       - 8080:8080
@@ -20,7 +22,7 @@ services:
       # FederationPort
       #- 9000:9000
       # APIPort - Don't expose by default
-      #- 19023:19023
+      - 19023:19023
 
     environment:
         # The ChangeMe section
@@ -68,5 +70,27 @@ services:
         FTS_EMERGENCY_RADIUS: 0 # radius of emergency within-which users will receive it
         FTS_LOG_LEVEL: "info"
 
+  # freetak-ui:
+  #   image: python:3.11
+  #   container_name: freetak-ui
+  #   working_dir: /app
+  #   ports:
+  #     - 5050:5000  # o cualquier otro puerto si el 5000 está ocupado
+  #   volumes:
+  #     - ./UI:/app
+  #     - fts-internal:/opt/fts/
+  #   depends_on:
+  #     - freetakserver
+  #   environment:
+  #     FTS_IP: freetakserver
+  #     FTS_API_PORT: 19023
+  #     FTS_API_PROTO: http
+  #     FTS_UI_EXPOSED_IP: 0.0.0.0
+  #   command: >
+  #     bash -c "
+  #       pip install --upgrade pip &&
+  #       pip install -r requirements.txt &&
+  #       python FreeTAKServer-UI/run.py"
+
 volumes:
-  free-tak-core-db:
+  fts-internal:
