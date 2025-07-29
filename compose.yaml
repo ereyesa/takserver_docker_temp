@@ -9,7 +9,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./FreeTAKServer:/home/freetak/FreeTAKServer
-      - ./fts-internal:/opt/fts/
+      - fts-internal:/opt/fts/
     ports:
       # DataPackagePort
       - 8080:8080
